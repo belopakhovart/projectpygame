@@ -1,0 +1,93 @@
+import pygame
+import os
+import sys
+pygame.init()
+FPS = 50
+
+pygame.init()
+image = pygame.Surface([100, 100])
+size = 1000, 800
+screen = pygame.display.set_mode(size)
+pygame.mouse.set_visible(False)
+clock = pygame.time.Clock()
+
+def load_image(name, colorkey=None, color_key=None):
+    fullname = os.path.join('data', name)
+    image = pygame.image.load(fullname).convert()
+    if colorkey is not None:
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(color_key)
+    else:
+        image = image.convert_alpha()
+    return image
+
+
+def start_screen():
+    WIDTH = 1000
+    HEIGHT = 800
+    intro_text = ["Здравствуйте!", "",
+                  "Для начала игры",
+                  "Нажмите любую клавишу"]
+
+    fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pass
+            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(FPS)
+
+image = load_image("creature.png")
+running = True
+pos = [100, 100]
+motion = 0
+
+
+
+start_screen()
+
+while running:
+    screen.fill((0, 0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                motion = 'DOWN'
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                motion = 'UP'
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                motion = 'LEFT'
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                motion = 'RIGHT'
+        if event.type == pygame.KEYUP:
+            motion = 0
+
+    if motion == 'DOWN':
+        pos = [pos[0], pos[1] + 1]
+    elif motion == 'UP':
+        pos = [pos[0], pos[1] - 1]
+    elif motion == 'LEFT':
+        pos = [pos[0] - 1, pos[1]]
+    elif motion == 'RIGHT':
+        pos = [pos[0] + 1, pos[1]]
+    screen.blit(image, pos)
+    pygame.display.flip()
